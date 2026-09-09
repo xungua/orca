@@ -92,6 +92,24 @@ export function wslGatedReadFile(
   )
 }
 
+/**
+ * Whole-file read for scan-side parsers that refuse unbounded inputs: a
+ * third-party store can grow a single "message" JSON to hundreds of MB
+ * (observed: 278 MB OpenCode message blobs), and reading it whole OOM-kills
+ * the scanner service. Returns null instead of reading when `stat` reports
+ * more than `maxBytes`, so callers can skip or surface it their own way.
+ */
+export async function wslGatedReadFileBounded(
+  path: string,
+  encoding: BufferEncoding,
+  maxBytes: number,
+  priority: WslTranscriptFsTaskPriority,
+  signal?: AbortSignal
+): Promise<string | null> {
+  const stats = await wslGatedStat(path, priority, signal)
+  return stats.size > maxBytes ? null : wslGatedReadFile(path, encoding, priority, signal)
+}
+
 // dedupe:false — two joiners would share one FileHandle and both close it.
 export function wslGatedOpen(
   path: string,

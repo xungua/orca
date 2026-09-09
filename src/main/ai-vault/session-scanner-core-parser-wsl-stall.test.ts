@@ -163,7 +163,9 @@ beforeEach(() => {
   mocks.readdir.mockReset()
   mocks.stat.mockReset()
   releaseStall = undefined
-  mocks.stat.mockRejectedValue(missing())
+  // The scan-side bounded reads stat before reading; a resolvable size keeps
+  // the mocked stores "present" so each test scripts its own stall/miss.
+  mocks.stat.mockResolvedValue({ size: 128 })
   // performance.now drives the route quarantine clock, so it must be faked too.
   vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date', 'performance'] })
 })

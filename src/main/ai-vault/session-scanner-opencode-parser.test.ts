@@ -90,4 +90,72 @@ describe('parseOpenCodeSessionFile', () => {
       'Later turn'
     ])
   })
+
+  it('skips an oversized message file without losing the session', async () => {
+    const storageRoot = await mkdtemp(join(tmpdir(), 'orca-opencode-parser-'))
+    tempDirs.push(storageRoot)
+    const sessionDir = join(storageRoot, 'session', 'project')
+    const messageDir = join(storageRoot, 'message', 'ses_blob')
+    await mkdir(sessionDir, { recursive: true })
+    await mkdir(messageDir, { recursive: true })
+
+    const path = join(sessionDir, 'ses_blob.json')
+    const mtimeMs = Date.now()
+    await writeFile(
+      path,
+      JSON.stringify({
+        id: 'ses_blob',
+        directory: '/tmp/opencode',
+        title: 'Blob session',
+        time: { created: 1_777_634_000_000, updated: 1_777_634_002_000 }
+      })
+    )
+    await writeFile(join(messageDir, 'msg_1.json'), userMessage('First prompt', 1_777_634_000_000))
+    // A snapshot-laden message JSON past the 16MB scan bound.
+    await writeFile(
+      join(messageDir, 'msg_blob.json'),
+      JSON.stringify({
+        role: 'user',
+        content: [{ type: 'text', text: 'x'.repeat(17 * 1024 * 1024) }],
+        time: { created: 1_777_634_001_000 }
+      })
+    )
+    await writeFile(join(messageDir, 'msg_3.json'), userMessage('Third prompt', 1_777_634_002_000))
+
+    const session = await parseOpenCodeSessionFile({
+      path,
+      mtimeMs,
+      modifiedAt: new Date(mtimeMs).toISOString()
+    })
+
+    expect(session).not.toBeNull()
+    expect(session?.title).toBe('Blob session')
+    expect(session?.messageCount).toBe(2)
+    expect(session?.previewMessages.map((message) => message.text)).toEqual([
+      'First prompt',
+      'Third prompt'
+    ])
+  })
+
+  it('throws on an oversized session record so the scan surfaces an issue', async () => {
+    const storageRoot = await mkdtemp(join(tmpdir(), 'orca-opencode-parser-'))
+    tempDirs.push(storageRoot)
+    const sessionDir = join(storageRoot, 'session', 'project')
+    await mkdir(sessionDir, { recursive: true })
+
+    const path = join(sessionDir, 'ses_huge.json')
+    const mtimeMs = Date.now()
+    await writeFile(
+      path,
+      JSON.stringify({
+        id: 'ses_huge',
+        directory: '/tmp/opencode',
+        padding: 'x'.repeat(17 * 1024 * 1024)
+      })
+    )
+
+    await expect(
+      parseOpenCodeSessionFile({ path, mtimeMs, modifiedAt: new Date(mtimeMs).toISOString() })
+    ).rejects.toThrow(/exceeds the 16MB scan bound/)
+  })
 })
