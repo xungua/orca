@@ -93,6 +93,8 @@ describe.skipIf(process.platform !== 'darwin' || process.getuid?.() === 0)(
       const installed = await installer.install()
       expect(installed.state).toBe('installed')
       await expect(readlink(fixture.commandPath)).resolves.toBe(installed.launcherPath)
+      // macOS checks symlink read permissions when other users resolve the launcher.
+      expect((await lstat(fixture.commandPath)).mode & 0o777).toBe(0o755)
 
       await chmod(fixture.protectedDirectory, 0o500)
       await expect(installer.remove()).resolves.toMatchObject({ state: 'not_installed' })
