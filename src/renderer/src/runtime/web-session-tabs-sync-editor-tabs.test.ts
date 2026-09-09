@@ -340,7 +340,15 @@ describe('applyWebSessionTabsSnapshot', () => {
 
     expect(patch.openFiles).toEqual([])
     expect(patch.unifiedTabsByWorktree?.[WT]).toBeUndefined()
-    expect(patch.groupsByWorktree?.[WT]).toBeUndefined()
+    expect(patch.groupsByWorktree?.[WT]).toEqual([
+      {
+        id: 'host-group-1',
+        worktreeId: WT,
+        activeTabId: null,
+        tabOrder: [],
+        recentTabIds: []
+      }
+    ])
     expect(patch.activeFileId).toBeNull()
     expect(patch.activeFileIdByWorktree?.[WT]).toBeNull()
     expect(patch.activeTabType).toBe('terminal')

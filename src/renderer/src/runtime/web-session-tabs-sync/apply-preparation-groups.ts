@@ -51,7 +51,8 @@ export function prepareWebSessionTabsSnapshotGroups(
     // is client-owned even before any local group record exists — first adoption on an
     // empty worktree must repair a rendered-leaf-without-record or materialize a rendered
     // group instead of publishing the tab into a group no local leaf will ever show.
-    if (!nextUnifiedTabs || (currentGroups.length === 0 && !options?.preserveLocalLayout)) {
+    // Empty snapshots still reconcile client groups with the layout that renders them.
+    if (currentGroups.length === 0 && !options?.preserveLocalLayout) {
       return null
     }
     // Why: an entity-identical replacement (provisional terminal → mirrored surface, local

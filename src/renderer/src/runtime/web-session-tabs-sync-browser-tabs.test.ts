@@ -812,7 +812,15 @@ describe('applyWebSessionTabsSnapshot', () => {
     expect(patch.browserPagesByWorkspace?.[workspace.id]).toBeUndefined()
     expect(patch.remoteBrowserPageHandlesByPageId?.[page.id]).toBeUndefined()
     expect(patch.unifiedTabsByWorktree?.[WT]).toBeUndefined()
-    expect(patch.groupsByWorktree?.[WT]).toBeUndefined()
+    expect(patch.groupsByWorktree?.[WT]).toEqual([
+      {
+        id: 'host-group-1',
+        worktreeId: WT,
+        activeTabId: null,
+        tabOrder: [],
+        recentTabIds: []
+      }
+    ])
     expect(patch.activeBrowserTabId).toBeNull()
     expect(patch.activeBrowserTabIdByWorktree?.[WT]).toBeNull()
     expect(patch.activeTabType).toBe('terminal')
