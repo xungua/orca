@@ -1,5 +1,6 @@
 import { getSystemPrefersDark } from '@/lib/terminal-theme'
 import type { AppState } from '@/store/types'
+import { getExplicitRuntimeEnvironmentIdForWorktree } from '@/lib/worktree-runtime-owner'
 import type {
   RuntimeMobileSessionSnapshotTab,
   RuntimeMobileSessionTabsSnapshot
@@ -67,6 +68,11 @@ export function buildMobileSessionTabSnapshots(
   const snapshots: RuntimeMobileSessionTabsSnapshot[] = []
 
   for (const worktreeId of worktreeIds) {
+    // Paired workspaces publish from their own host; echoing mirrors changes their owner.
+    if (getExplicitRuntimeEnvironmentIdForWorktree(state, worktreeId)) {
+      graphState.mobileSessionSnapshotCacheByWorktree.delete(worktreeId)
+      continue
+    }
     const workspaceScope = parseWorkspaceKey(worktreeId)
     if (
       workspaceScope?.type === 'folder' &&

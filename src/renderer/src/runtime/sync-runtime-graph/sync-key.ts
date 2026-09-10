@@ -72,6 +72,12 @@ export function canSkipRuntimeMobileSessionSyncKeyBuild(
     state.terminalLayoutsByTabId === previousState.terminalLayoutsByTabId &&
     state.runtimePaneTitlesByTabId === previousState.runtimePaneTitlesByTabId &&
     state.nativeChatLaunchDraftByTabId === previousState.nativeChatLaunchDraftByTabId &&
+    state.repos === previousState.repos &&
+    state.worktreesByRepo === previousState.worktreesByRepo &&
+    state.detectedWorktreesByRepo === previousState.detectedWorktreesByRepo &&
+    state.projectGroups === previousState.projectGroups &&
+    state.activeWorktreeId === previousState.activeWorktreeId &&
+    state.activeWorkspaceExecutionHostId === previousState.activeWorkspaceExecutionHostId &&
     state.folderWorkspaces === previousState.folderWorkspaces &&
     state.agentStatusEpoch === previousState.agentStatusEpoch &&
     state.agentStatusByPaneKey === previousState.agentStatusByPaneKey
@@ -102,6 +108,12 @@ export function getRuntimeMobileSessionSyncKey(
     terminalLayoutsByTabId: state.terminalLayoutsByTabId,
     runtimePaneTitlesByTabId: state.runtimePaneTitlesByTabId,
     nativeChatLaunchDraftByTabId: state.nativeChatLaunchDraftByTabId,
+    repos: state.repos,
+    worktreesByRepo: state.worktreesByRepo,
+    detectedWorktreesByRepo: state.detectedWorktreesByRepo,
+    projectGroups: state.projectGroups,
+    activeWorktreeId: state.activeWorktreeId,
+    activeWorkspaceExecutionHostId: state.activeWorkspaceExecutionHostId,
     folderWorkspaces: state.folderWorkspaces,
     groupsByWorktree: state.groupsByWorktree,
     activeGroupIdByWorktree: state.activeGroupIdByWorktree,
@@ -157,6 +169,12 @@ export function runtimeMobileSessionSyncKeysEqual(
     a.terminalLayoutsByTabId === b.terminalLayoutsByTabId &&
     a.runtimePaneTitlesByTabId === b.runtimePaneTitlesByTabId &&
     a.nativeChatLaunchDraftByTabId === b.nativeChatLaunchDraftByTabId &&
+    a.repos === b.repos &&
+    a.worktreesByRepo === b.worktreesByRepo &&
+    a.detectedWorktreesByRepo === b.detectedWorktreesByRepo &&
+    a.projectGroups === b.projectGroups &&
+    a.activeWorktreeId === b.activeWorktreeId &&
+    a.activeWorkspaceExecutionHostId === b.activeWorkspaceExecutionHostId &&
     a.folderWorkspaces === b.folderWorkspaces &&
     a.groupsByWorktree === b.groupsByWorktree &&
     a.activeGroupIdByWorktree === b.activeGroupIdByWorktree &&

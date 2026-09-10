@@ -5,6 +5,13 @@ import type { TabGroupLayoutNode } from '../../../../shared/tab-types'
 import type { TerminalPaneLayoutNode } from '../../../../shared/terminal-tab-types'
 
 export type RuntimeMobileSessionSyncKey = {
+  repos: AppState['repos']
+  worktreesByRepo: AppState['worktreesByRepo']
+  detectedWorktreesByRepo: AppState['detectedWorktreesByRepo']
+  projectGroups: AppState['projectGroups']
+  activeWorktreeId: AppState['activeWorktreeId']
+  activeWorkspaceExecutionHostId: AppState['activeWorkspaceExecutionHostId']
+
   // Reference changes signal layout/title updates without stringifying thousands of tabs.
   terminalLayoutsByTabId: AppState['terminalLayoutsByTabId']
   runtimePaneTitlesByTabId: AppState['runtimePaneTitlesByTabId']

@@ -1,4 +1,6 @@
 import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../../shared/constants'
+import type { WorktreeRuntimeOwnerState } from '../../lib/worktree-runtime-owner'
+import { getExplicitRuntimeEnvironmentIdForWorktree } from '../../lib/worktree-runtime-owner'
 import type { RuntimeMobileSessionTabsResult } from '../../../../shared/runtime-types'
 import type {
   WebSessionTabsBatchContext,
@@ -18,7 +20,7 @@ import { buildWebSessionTabsFinalPatch } from './apply-final-patch'
 
 /** Reconcile one host frame through the staged terminal/browser/layout pipeline. */
 export function applyWebSessionTabsSnapshotWithContext(
-  state: WebSessionTabsSyncState,
+  state: WebSessionTabsSyncState & WorktreeRuntimeOwnerState,
   rawSnapshot: RuntimeMobileSessionTabsResult,
   environmentId: string,
   now = Date.now(),
@@ -32,6 +34,11 @@ export function applyWebSessionTabsSnapshotWithContext(
     return state
   }
   const worktreeId = rawSnapshot.worktree
+  const ownerEnvironmentId = getExplicitRuntimeEnvironmentIdForWorktree(state, worktreeId)
+  // Older peers can echo a third host's tabs; the workspace catalog owns the route.
+  if (ownerEnvironmentId && ownerEnvironmentId !== environmentId) {
+    return state
+  }
   const base = prepareWebSessionTabsSnapshotBase(
     state,
     rawSnapshot,
